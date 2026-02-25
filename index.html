@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cyber DNA</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+
+            /* Background Image */
+            background-image: url("https://images2.alphacoders.com/140/thumb-1920-1400251.png");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            overflow: hidden;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Clouds Animation Layer */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 200px;
+            background: url("https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Cloud-PNG/Clouds_PNG_Transparent_Clip_Art_Image.png?m=1629830703");
+            opacity: 0.6;
+            animation: moveClouds 60s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes moveClouds {
+            from {
+                transform: translateX(0);
+            }
+
+            to {
+                transform: translateX(50%);
+            }
+        }
+
+        .overlay {
+            position: relative;
+            z-index: 1;
+            padding: 50px;
+            border-radius: 20px;
+            color: white;
+
+            /* REMOVE DARK BACKGROUND */
+            background: transparent;
+            backdrop-filter: none;
+        }
+
+        h1 {
+            color: white;
+            font-size: 45px;
+            animation: glowBlue 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glowBlue {
+            from {
+                text-shadow:
+                    0 0 10px #00ffff,
+                    0 0 20px #00e6ff;
+            }
+
+            to {
+                text-shadow:
+                    0 0 20px #00ffff,
+                    0 0 40px #00ccff,
+                    0 0 60px #00b3ff;
+            }
+        }
+
+        button {
+            background-color: aqua;
+            font-size: 22px;
+            padding: 15px 40px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin: 10px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 20px cyan;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="overlay">
+        <h1>🔐 Cyber Carnival AI Authentication</h1>
+        <button onclick="goRegister()">Register</button>
+        <button onclick="goLogin()">Login</button>
+    </div>
+
+    <script src="main.js"></script>
+
+</body>
+
+</html>

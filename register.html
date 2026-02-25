@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Cyber DNA Registration</title>
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+
+            background: url("https://w0.peakpx.com/wallpaper/159/412/HD-wallpaper-shin-chan-anime-crayonshinchan-shin-chan.jpg") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        h1 {
+            color: white;
+            font-size: 38px;
+            margin-top: 30px;
+            text-shadow:
+                0 0 10px #00ffff,
+                0 0 20px #00ccff,
+                0 0 40px #0099ff;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            width: 380px;
+            margin: auto;
+            margin-top: 30px;
+            border-radius: 20px;
+        }
+
+        input {
+            padding: 10px;
+            width: 250px;
+            margin: 8px;
+            border-radius: 8px;
+            border: none;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: #00e6e6;
+            cursor: pointer;
+            margin: 8px;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 0 15px #00ffff;
+        }
+
+        video {
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        #statusText {
+            margin-top: 10px;
+            font-weight: bold;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>🎮 Cyber DNA Registration</h1>
+
+    <div class="container">
+
+        <input id="username" placeholder="Enter Username"><br>
+        <button onclick="startQuestions()">Start Registration</button>
+
+        <h2 id="questionText"></h2>
+        <input id="answerInput" style="display:none;" placeholder="Type your answer"><br>
+        <button id="nextBtn" style="display:none;" onclick="nextQuestion()">Next</button>
+
+        <br>
+        <video id="video" width="300" autoplay style="display:none;"></video>
+        <br>
+        <button id="registerBtn" style="display:none;" onclick="register()">Register Face</button>
+
+        <h3 id="statusText"></h3>
+
+    </div>
+
+    <script>
+
+        let questions = [
+            "Favorite Color",
+            "Pet Name",
+            "Favorite Number",
+            "Hobby",
+            "Favorite Flower"
+        ];
+
+        let answers = {};
+        let currentIndex = 0;
+
+        function startQuestions() {
+
+            let usernameValue = document.getElementById("username").value;
+
+            if (usernameValue === "") {
+                alert("Enter username first");
+                return;
+            }
+
+            document.getElementById("questionText").innerText =
+                "What is your " + questions[currentIndex] + "?";
+
+            document.getElementById("answerInput").style.display = "inline";
+            document.getElementById("nextBtn").style.display = "inline";
+        }
+
+        function nextQuestion() {
+
+            let answer = document.getElementById("answerInput").value;
+
+            if (answer === "") {
+                alert("Please type answer");
+                return;
+            }
+
+            answers[questions[currentIndex].toLowerCase().replace(" ", "")] = answer;
+
+            document.getElementById("answerInput").value = "";
+            currentIndex++;
+
+            if (currentIndex < questions.length) {
+
+                document.getElementById("questionText").innerText =
+                    "What is your " + questions[currentIndex] + "?";
+
+            }
+            else {
+
+                document.getElementById("questionText").innerText =
+                    "Now show your face to register.";
+
+                document.getElementById("answerInput").style.display = "none";
+                document.getElementById("nextBtn").style.display = "none";
+
+                startCamera();
+            }
+        }
+
+        function startCamera() {
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    let video = document.getElementById("video");
+                    video.srcObject = stream;
+                    video.style.display = "block";
+                    document.getElementById("registerBtn").style.display = "inline";
+                });
+        }
+
+        function register() {
+
+            let video = document.getElementById("video");
+            let statusText = document.getElementById("statusText");
+
+            statusText.innerText = "Capturing face...";
+
+            let canvas = document.createElement("canvas");
+            canvas.width = 640;
+            canvas.height = 480;
+            canvas.getContext("2d").drawImage(video, 0, 0);
+
+            fetch("http://127.0.0.1:5000/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: document.getElementById("username").value,
+                    color: answers.favoritecolor,
+                    pet: answers.petname,
+                    number: answers.favoritenumber,
+                    hobby: answers.hobby,
+                    flower: answers.favoriteflower,
+                    image: canvas.toDataURL()
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+
+                    if (data.status === "registered") {
+                        statusText.innerText = "✅ Face Registered Successfully!";
+                    }
+                    else {
+                        statusText.innerText = "❌ Registration Failed!";
+                    }
+
+                })
+                .catch(err => {
+                    statusText.innerText = "❌ Server Error!";
+                    console.log(err);
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>
